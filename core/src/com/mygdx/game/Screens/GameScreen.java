@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.Screens.BallInfo.*;
 import com.mygdx.game.SpaceGame;
 
@@ -26,11 +27,12 @@ public class GameScreen implements Screen {
     private final float TIMESTEP=1/60f;
     private final int VELOCITYITERATIONS = 8 , POSTIONITERATIONS =3;
 
-    public CueBall cueball; // white ball
-    public BlackBall blackball;
-    public SolidBall solidball[]= new SolidBall[7];
-    public StripeBall stripeball[]= new StripeBall[7];
+    public static CueBall cueball; // white ball
+    public static BlackBall blackball;
+    public static SolidBall solidball[]= new SolidBall[7];
+    public static StripeBall stripeball[]= new StripeBall[7];
     public Edge edge1;	public Edge edge2; 	public Edge edge3; 	public Edge edge4; // the 4 edges in the table
+    public Stick stick;
 
 
     //drawing
@@ -57,6 +59,7 @@ public class GameScreen implements Screen {
         edge2 = new Edge(new Vector2(-23.5f,0),new Vector2(23.5f,0),new Vector2(0,-11.5f));
         edge3 = new Edge(new Vector2(0,-11.5f),new Vector2(0,13),new Vector2(23.5f,0));
         edge4 = new Edge(new Vector2(0,-11.5f),new Vector2(0,13),new Vector2(-23.5f,0));
+        stick=new Stick(cueball,new Sprite(new Texture("Assets/Stick.png")));
 
         tmpBodies= new Array<Body>();
         int count=0; // used as index for the balls
@@ -95,13 +98,37 @@ public class GameScreen implements Screen {
 
         }
     }
+    boolean check=true;
 
     @Override
     public void render(float delta) {
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) // press a to push the cueball
-            cueball.getBall().applyForceToCenter(new Vector2(10000,0),true);
-        if(Gdx.input.isKeyPressed(Input.Keys.S))  // press a to push the cueball
-            cueball.getBall().applyForceToCenter(new Vector2(10000,500),true);
+        if(cueball.CheckBallMovement()) {//if cueball stopped moving
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) { // press a to push the cueball
+                check=false;
+                //I took the same angle used in updateStickRotation() to position the force in the direction of the mouse
+                cueball.getBall().applyForceToCenter(new Vector2( (float)(Math.cos(stick.angle) * 20000),(float) (Math.sin(stick.angle) * 20000)), true);
+
+                //want to delay disappearance of stick till after the cueball is hit by 2 seconds
+
+                Timer.Task task = new Timer.Task() {//Specify the task I want to delay
+                    @Override
+
+                    public void run() {
+                        //System.out.println("MEOW");
+                        check=true;
+                    }
+
+                };
+                new Timer().schedule(task, 0.5f);//delay time
+
+
+
+            }
+            else {stick.updateStickRotation();}//if nothing is pressed update stick position
+
+        }
+        else{if(check)stick.getStick().setTransform(39,30,0);}//stick disappear
+
 
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -109,7 +136,6 @@ public class GameScreen implements Screen {
 
 
         world.step(TIMESTEP,VELOCITYITERATIONS,POSTIONITERATIONS); // to make the world feel the time
-        debugRenderer.render(world,camera.combined);  // to render the bodies
 
        spaceGame.batch.setProjectionMatrix(camera.combined);
        spaceGame. batch.begin();
@@ -120,12 +146,14 @@ public class GameScreen implements Screen {
             if(body.getUserData()!=null && body.getUserData() instanceof Sprite)
             {
                 Sprite sprite=(Sprite)body.getUserData();
-                sprite.setPosition(body.getPosition().x-sprite.getWidth()/2,body.getPosition().y-sprite.getWidth()/2);
+                sprite.setPosition(body.getPosition().x-sprite.getWidth()/2,body.getPosition().y-sprite.getHeight()/2);
                 sprite.setRotation(body.getAngle()* MathUtils.radiansToDegrees);
                 sprite.draw(spaceGame.batch);
             }
         }
+
        spaceGame.batch.end();
+        //debugRenderer.render(world,camera.combined);  // to render the bodies
 
 
 

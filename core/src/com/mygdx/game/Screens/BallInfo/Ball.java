@@ -63,4 +63,49 @@ public class Ball {
     public void setBall(Body ball) {
         Ball = ball;
     }
+
+
+    public float getRADIUS() {
+        return RADIUS;
+    }
+
+    public Vector2 getPosition() {
+        return Position;
+    }
+
+    public void setPosition(Vector2 position) {
+        Position = position;
+    }
+
+    public BodyDef getBalldef() {
+        return balldef;
+    }
+
+    public void setBalldef(BodyDef balldef) {
+        this.balldef = balldef;
+    }
+
+    public FixtureDef getFixturedef() {
+        return fixturedef;
+    }
+
+    public void setFixturedef(FixtureDef fixturedef) {
+        this.fixturedef = fixturedef;
+    }
+
+    public CircleShape getShape() {
+        return shape;
+    }
+
+    public void setShape(CircleShape shape) {
+        this.shape = shape;
+    }
+
+    public Sprite getBallSprite() {
+        return ballSprite;
+    }
+
+    public void setBallSprite(Sprite ballSprite) {
+        this.ballSprite = ballSprite;
+    }
 }
