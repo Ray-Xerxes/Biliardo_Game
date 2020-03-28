@@ -26,13 +26,17 @@ public class GameScreen implements Screen {
     // makes the world move by the time (final)
     private final float TIMESTEP=1/60f;
     private final int VELOCITYITERATIONS = 8 , POSTIONITERATIONS =3;
-
     public static CueBall cueball; // white ball
     public static BlackBall blackball;
     public static SolidBall solidball[]= new SolidBall[7];
     public static StripeBall stripeball[]= new StripeBall[7];
-    public Edge edge1;	public Edge edge2; 	public Edge edge3; 	public Edge edge4; // the 4 edges in the table
     public Stick stick;
+    public Edge edge1 ;
+    public Edge edge2 ;
+    public Edge edge3 ;
+    public Edge edge4 ;
+    public Edge edge5 ;
+    public Edge edge6 ;
 
 
     //drawing
@@ -55,11 +59,16 @@ public class GameScreen implements Screen {
 
         // initialize the objects and sets the initial position
         cueball = new CueBall(	new Vector2(-15,0),	new Sprite(new Texture("Assets/whiteBall.png")));
-        edge1 = new Edge(new Vector2(-23.5f,0),new Vector2(23.5f,0),new Vector2(0,11.5f));
-        edge2 = new Edge(new Vector2(-23.5f,0),new Vector2(23.5f,0),new Vector2(0,-11.5f));
-        edge3 = new Edge(new Vector2(0,-11.5f),new Vector2(0,13),new Vector2(23.5f,0));
-        edge4 = new Edge(new Vector2(0,-11.5f),new Vector2(0,13),new Vector2(-23.5f,0));
         stick=new Stick(cueball,new Sprite(new Texture("Assets/Stick.png")));
+        edge1 =  new Edge(new Vector2(-1,-9.6f),new Vector2(0.02f,-11f ),new Vector2(-1,9.6f),new Vector2(0.02f,11f),new Vector2(24.5f,0));
+        edge2 =  new Edge(new Vector2(1,-9.6f),new Vector2(0.02f,-11f ),new Vector2(1,9.6f),new Vector2(0.02f,11f),new Vector2(-24.5f,0));
+        edge3 =  new Edge(new Vector2(-10.5f,1.1f),new Vector2(-11,0.02f ),new Vector2(9.8f,1.1f),new Vector2(11,0.02f),new Vector2(11.8f,-12.65f));
+        edge4 =  new Edge(new Vector2(-9.8f,1.1f),new Vector2(-11,0.02f ),new Vector2(10.3f,1.1f),new Vector2(10.8f,0.02f),new Vector2(-12.3f,-12.65f));
+        edge5 =  new Edge(new Vector2(-10.5f,-1.1f),new Vector2(-11,0.02f ),new Vector2(9.8f,-1.1f),new Vector2(11,0.02f),new Vector2(11.8f,12.65f));
+        edge6 =  new Edge(new Vector2(-9.8f,-1.1f),new Vector2(-11,0.02f ),new Vector2(10.3f,-1.1f),new Vector2(10.8f,0.02f),new Vector2(-12.3f,12.65f));
+
+
+
 
         tmpBodies= new Array<Body>();
         int count=0; // used as index for the balls
@@ -68,7 +77,7 @@ public class GameScreen implements Screen {
         // a function to set the balls position
         for (int i=0;i<5;i++)
         {
-            float x= (float)(i * (Math.sqrt(5) * 0.65)); // gets the x position
+            float x= (float)(i * (Math.sqrt(5) * 0.65))+8; // gets the x position
 
             for(float y : rowXs(i)) { //gets the y position ( loops on every item in royXs(i) )
 
@@ -102,11 +111,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
         if(cueball.CheckBallMovement()) {//if cueball stopped moving
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) { // press a to push the cueball
                 check=false;
                 //I took the same angle used in updateStickRotation() to position the force in the direction of the mouse
-                cueball.getBall().applyForceToCenter(new Vector2( (float)(Math.cos(stick.angle) * 20000),(float) (Math.sin(stick.angle) * 20000)), true);
+                cueball.getBall().applyForceToCenter(new Vector2( (float)(Math.cos(stick.angle) * 70000),(float) (Math.sin(stick.angle) * 70000)), true);
 
                 //want to delay disappearance of stick till after the cueball is hit by 2 seconds
 
@@ -141,6 +151,14 @@ public class GameScreen implements Screen {
        spaceGame. batch.begin();
        table.draw(spaceGame.batch);
         world.getBodies(tmpBodies);
+
+
+        for(Body body:tmpBodies)
+        {
+            if((body.getPosition().y>=11.8f||body.getPosition().y<=-11.8f)&&body.getLinearDamping()!=0)
+                body.setTransform(100,100,0);
+        }
+
         for(Body body:tmpBodies)
         {
             if(body.getUserData()!=null && body.getUserData() instanceof Sprite)

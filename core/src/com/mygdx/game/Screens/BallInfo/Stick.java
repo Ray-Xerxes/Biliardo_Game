@@ -18,7 +18,7 @@ public class Stick {
     public float adj;
     public float opp;
     public float angle;
-    public static final int  StickCueBallDistance =10;//distance between stick and WhiteBall
+    public static final int  StickCueBallDistance =14;//distance between stick and WhiteBall
     Sprite StickSprite;
 
 
@@ -54,7 +54,7 @@ public class Stick {
         angle = (float) Math.atan2(opp, adj);
 
         //create sprite
-        StickSprite.setSize(20f,  4f);
+        StickSprite.setSize(30f,  4f);
         StickSprite.setRotation(angle);
         StickSprite.setOrigin(StickSprite.getWidth() / 2, StickSprite.getHeight() / 2);
         stick.setUserData(StickSprite);

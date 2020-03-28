@@ -5,26 +5,34 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.game.Screens.GameScreen;
 
 public class Edge {
     Vector2 FromPostion,ToPostion;
     BodyDef Egdedef;
     FixtureDef fixturedef;
-    ChainShape shape;
+    PolygonShape shape;
     Sprite EdgeSprite;
 
-    public Edge(Vector2 FromPos, Vector2 ToPos, Vector2 Pos)
+    public Edge(Vector2 vertices1,Vector2 vertices2,Vector2 vertices3,Vector2 vertices4, Vector2 Pos)
     {
-        this.FromPostion=FromPos;
-        this.ToPostion=ToPos;
-
         Egdedef = new BodyDef();
         Egdedef.type= BodyDef.BodyType.StaticBody;
         Egdedef.position.set(Pos.x,Pos.y);
 
-        shape = new ChainShape();
-        shape.createChain(  new Vector2[]{FromPos,ToPos}  );// the length of the chain
+
+
+
+        shape = new PolygonShape();
+        Vector2[] vertices = new Vector2[4];
+
+        vertices[0] = vertices1;
+        vertices[1] = vertices2;
+        vertices[2] = vertices3;
+        vertices[3] = vertices4;
+        shape = new PolygonShape();
+        shape.set(vertices);
 
         fixturedef = new FixtureDef();
         fixturedef.density=2.5f;
