@@ -116,17 +116,19 @@ public class GameScreen implements Screen {
 
 
 
-    boolean check=false;
+    boolean check=true;
     boolean ch=false;
-
+    int disx,disy;
     @Override
     public void render(float delta) {
 
+    counter= (int) Math.sqrt((Gdx.input.getX()-disx)*(Gdx.input.getX()-disx) + (Gdx.input.getY()-disy)*(Gdx.input.getY()-disy));
 
 
 
         if(cueball.CheckBallMovement()) {//if cueball stopped moving
 
+            if(check) stick.updateStickRotation();
 
             Gdx.input.setInputProcessor(new InputHandle() {
                 @Override
@@ -134,25 +136,20 @@ public class GameScreen implements Screen {
                     check=false;
                     ch=true;
                     counter++;
+                    disx=Gdx.input.getX();
+                    disy=Gdx.input.getY();
                     return super.touchDown(screenX, screenY, pointer, button);
 
                 }
 
-                @Override
-                public boolean keyDown(int keycode) {
-                    if(ch) {
-                        counter+=5;
-                        stick.updateStickRotation();
-                        check = false;
-                    }
-                    return super.keyDown(keycode);
-                }
+
+
 
                 @Override
                 public boolean touchDragged ( int screenX, int screenY, int pointer){
                     if(ch) {
                         counter+=5;
-                        stick.updateStickRotation();
+
                         check = false;
                     }
                     return super.touchDragged(screenX, screenY, pointer);
@@ -163,11 +160,11 @@ public class GameScreen implements Screen {
                 public boolean touchUp ( int screenX, int screenY, int pointer, int button){
                     if(ch) {
                         System.out.println("aaaaa");
-                        check = true;
                         cueball.getBall().applyForceToCenter(new Vector2((float) (Math.cos(stick.angle) * 100 * counter), (float) (Math.sin(stick.angle) * 100 * counter)), true);
-
+                        check = true;
                     }
                     counter=5;
+
                     ch=false;
                     return super.touchUp(screenX, screenY, pointer, button);
                 }
@@ -176,9 +173,8 @@ public class GameScreen implements Screen {
 
             });
 
-            stick.updateStickRotation();
             if(Gdx.input.isTouched())
-                counter++;
+                counter+=2;
 
 
         }
@@ -206,6 +202,8 @@ public class GameScreen implements Screen {
 
         if((body.getPosition().y>=11.7f||body.getPosition().y<=-11.7f)&&body.getLinearDamping()!=0)
                 body.setTransform(100,100,0);
+
+
         }
 
         for(Body body:tmpBodies)
