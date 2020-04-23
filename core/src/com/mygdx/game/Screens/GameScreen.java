@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -118,15 +119,40 @@ public class GameScreen implements Screen {
 
     boolean check=true;
     boolean ch=false;
+    boolean checkcueball=false;
     int disx,disy;
+    Vector3 vv;
     @Override
     public void render(float delta) {
 
     counter= (int) Math.sqrt((Gdx.input.getX()-disx)*(Gdx.input.getX()-disx) + (Gdx.input.getY()-disy)*(Gdx.input.getY()-disy));
 
+    if(checkcueball)
+    {
+
+            vv = new Vector3((Gdx.input.getX()), Gdx.input.getY(), 0);//get mouse position
+        GameScreen.camera.unproject(vv);//translate this position to our world coordinate
+        if(vv.x>0)
+            vv.x=Math.min(vv.x,23);
+        else
+            vv.x=Math.max(vv.x,-23);
+
+        if(vv.y>0)
+            vv.y=Math.min(vv.y,11);
+        else
+            vv.y=Math.max(vv.y,-11);
 
 
-        if(cueball.CheckBallMovement()) {//if cueball stopped moving
+        cueball.getBall().setTransform(vv.x,vv.y,0);
+
+        if(Gdx.input.isTouched()) {
+            cueball.getBall().setActive(true);
+
+            checkcueball=false;
+        }
+    check=true;
+    }
+      else  if(cueball.CheckBallMovement()) {//if cueball stopped moving
 
             if(check) stick.updateStickRotation();
 
@@ -173,8 +199,8 @@ public class GameScreen implements Screen {
 
             });
 
-            if(Gdx.input.isTouched())
-                counter+=2;
+            //if(Gdx.input.isTouched())
+                //counter+=2;
 
 
         }
@@ -200,9 +226,23 @@ public class GameScreen implements Screen {
         for(Body body:tmpBodies)
         {
 
-        if((body.getPosition().y>=11.7f||body.getPosition().y<=-11.7f)&&body.getLinearDamping()!=0)
-                body.setTransform(100,100,0);
+        if((body.getPosition().y>=11.7f||body.getPosition().y<=-11.7f)&&body.getLinearDamping()!=0) {
 
+            if(body.equals(cueball.getBall()))
+            {
+                System.out.println("meow22");
+                body.setTransform(0,0,0);
+                cueball.getBall().setLinearVelocity(0,0);
+                cueball.getBall().setAngularVelocity(0);
+                cueball.getFixturedef().isSensor=true;
+                cueball.getBall().setActive(false);
+                body.setTransform(0,0,0);
+
+                checkcueball=true;
+            }
+            else
+            body.setTransform(100, 100, 0);
+        }
 
         }
 
