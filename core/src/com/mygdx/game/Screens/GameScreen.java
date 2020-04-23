@@ -24,8 +24,7 @@ public class GameScreen implements Screen {
     public static OrthographicCamera camera;
     SpaceGame spaceGame;
     // makes the world move by the time (final)
-    private final float TIMESTEP=1/60f;
-    private final int VELOCITYITERATIONS = 8 , POSTIONITERATIONS =3;
+
     public static CueBall cueball; // white ball
     public static BlackBall blackball;
     public static SolidBall solidball[]= new SolidBall[7];
@@ -38,13 +37,17 @@ public class GameScreen implements Screen {
     public Edge edge5 ;
     public Edge edge6 ;
 
+    public Player player1;
+    public Player player2;
 
     //drawing
     public Array<Body> tmpBodies;
     public Sprite table;
 
+    public int counter;
 
-   public GameScreen(SpaceGame spaceGame) {
+
+    public GameScreen(SpaceGame spaceGame) {
        this.spaceGame = spaceGame;
    }
     @Override
@@ -77,7 +80,7 @@ public class GameScreen implements Screen {
         // a function to set the balls position
         for (int i=0;i<5;i++)
         {
-            float x= (float)(i * (Math.sqrt(5) * 0.65))+8; // gets the x position
+            float x= (float)(i * (Math.sqrt(5) * 0.55))+8; // gets the x position
 
             for(float y : rowXs(i)) { //gets the y position ( loops on every item in royXs(i) )
 
@@ -107,37 +110,82 @@ public class GameScreen implements Screen {
 
         }
     }
-    boolean check=true;
+
+
+
+
+
+
+    boolean check=false;
+    boolean ch=false;
 
     @Override
     public void render(float delta) {
 
+
+
+
         if(cueball.CheckBallMovement()) {//if cueball stopped moving
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) { // press a to push the cueball
-                check=false;
-                //I took the same angle used in updateStickRotation() to position the force in the direction of the mouse
-                cueball.getBall().applyForceToCenter(new Vector2( (float)(Math.cos(stick.angle) * 70000),(float) (Math.sin(stick.angle) * 70000)), true);
 
-                //want to delay disappearance of stick till after the cueball is hit by 2 seconds
 
-                Timer.Task task = new Timer.Task() {//Specify the task I want to delay
-                    @Override
+            Gdx.input.setInputProcessor(new InputHandle() {
+                @Override
+                public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                    check=false;
+                    ch=true;
+                    counter++;
+                    return super.touchDown(screenX, screenY, pointer, button);
 
-                    public void run() {
-                        //System.out.println("MEOW");
-                        check=true;
+                }
+
+                @Override
+                public boolean keyDown(int keycode) {
+                    if(ch) {
+                        counter+=5;
+                        stick.updateStickRotation();
+                        check = false;
                     }
+                    return super.keyDown(keycode);
+                }
 
-                };
-                new Timer().schedule(task, 0.5f);//delay time
+                @Override
+                public boolean touchDragged ( int screenX, int screenY, int pointer){
+                    if(ch) {
+                        counter+=5;
+                        stick.updateStickRotation();
+                        check = false;
+                    }
+                    return super.touchDragged(screenX, screenY, pointer);
+
+                }
+
+                @Override
+                public boolean touchUp ( int screenX, int screenY, int pointer, int button){
+                    if(ch) {
+                        System.out.println("aaaaa");
+                        check = true;
+                        cueball.getBall().applyForceToCenter(new Vector2((float) (Math.cos(stick.angle) * 100 * counter), (float) (Math.sin(stick.angle) * 100 * counter)), true);
+
+                    }
+                    counter=5;
+                    ch=false;
+                    return super.touchUp(screenX, screenY, pointer, button);
+                }
 
 
 
-            }
-            else {stick.updateStickRotation();}//if nothing is pressed update stick position
+            });
+
+            stick.updateStickRotation();
+            if(Gdx.input.isTouched())
+                counter++;
+
 
         }
-        else{if(check)stick.getStick().setTransform(39,30,0);}//stick disappear
+
+
+        else
+            stick.getStick().setTransform(10,30,0);
 
 
 
@@ -145,7 +193,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
-        world.step(TIMESTEP,VELOCITYITERATIONS,POSTIONITERATIONS); // to make the world feel the time
+        world.step(1f/60f, 5, 8); // to make the world feel the time
 
        spaceGame.batch.setProjectionMatrix(camera.combined);
        spaceGame. batch.begin();
@@ -155,7 +203,8 @@ public class GameScreen implements Screen {
 
         for(Body body:tmpBodies)
         {
-            if((body.getPosition().y>=11.8f||body.getPosition().y<=-11.8f)&&body.getLinearDamping()!=0)
+
+        if((body.getPosition().y>=11.7f||body.getPosition().y<=-11.7f)&&body.getLinearDamping()!=0)
                 body.setTransform(100,100,0);
         }
 
@@ -191,6 +240,9 @@ public class GameScreen implements Screen {
             default: throw new IllegalArgumentException("no more than 5 rows");
         }
     }
+
+
+
 
     @Override
     public void resize(int width, int height) {

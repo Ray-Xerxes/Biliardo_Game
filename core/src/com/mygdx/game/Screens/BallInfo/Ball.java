@@ -30,6 +30,8 @@ public class Ball {
         balldef = new BodyDef();
         balldef.type = BodyDef.BodyType.DynamicBody;
         balldef.position.set(Position.x, Position.y);
+        balldef.bullet = true;
+
 
         shape = new CircleShape();
         shape.setRadius(RADIUS); // small bodies works better in box2d
