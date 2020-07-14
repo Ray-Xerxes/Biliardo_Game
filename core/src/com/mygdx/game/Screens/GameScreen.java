@@ -152,6 +152,8 @@ public class GameScreen implements Screen {
         }
     check=true;
     }
+
+
       else  if(cueball.CheckBallMovement()) {//if cueball stopped moving
 
             if(check) stick.updateStickRotation();
@@ -186,6 +188,7 @@ public class GameScreen implements Screen {
                 public boolean touchUp ( int screenX, int screenY, int pointer, int button){
                     if(ch) {
                         System.out.println("aaaaa");
+                        if(cueball.CheckBallMovement())
                         cueball.getBall().applyForceToCenter(new Vector2((float) (Math.cos(stick.angle) * 100 * counter), (float) (Math.sin(stick.angle) * 100 * counter)), true);
                         check = true;
                     }
