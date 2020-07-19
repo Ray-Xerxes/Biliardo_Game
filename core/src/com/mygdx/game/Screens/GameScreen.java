@@ -144,137 +144,30 @@ public class GameScreen implements Screen {
 
     public void render(float delta) {
 
-    if(checkcueball) // when the cueball enters any hole
-    {
-    Movethecueballfreely(); // moves the cueball in all the table freely
-    }
+        if(checkcueball) // when the cueball enters any hole
+        {
+        Movethecueballfreely(); // moves the cueball in all the table freely
+        }
 
-      else  if(Checkallballsmovement()) {//if cueball stopped moving
-          if(turnfinished)
-          {
-              System.out.println(foulnumber);
-              System.out.println("player 1 : "+player1.isSolidBall()+" " + player1.isStripeBall());
-              System.out.println("player 2 : "+player2.isSolidBall()+" " + player2.isStripeBall());
-
-                 if(foulnumber==0) {
-                  checkchangetheplayerturn = true;
-                  System.out.println("the cueball didnt touch anyball");
-              }
-                 else if (Player.playeroneturn&&!player1.isCheckdropedaball())
-                 {
-                     checkchangetheplayerturn=false;
-                     Changeplayerturn();
-                     System.out.println("noballs1");
-
-                 }
-                 else if (!Player.playeroneturn&&!player2.isCheckdropedaball())
-                 {
-                     checkchangetheplayerturn=false;
-                     Changeplayerturn();
-                    System.out.println("noballs2");
-                 }
-
-
-              if(checkchangetheplayerturn)
-              {
-
-                  if(!checkfirstround){
-
-                  Changeplayerturn();
-                  checkchangetheplayerturn=false;
-                  System.out.println("turn changed");
-
-              }
-                  else
-                      checkfirstround=false;
-
-              }
-
-                  turnfinished=false;// the turn started
-          }
-
-        checkfirstballtouched=false;
-
-
-
-
+        else  if(Checkallballsmovement()) {//if cueball stopped moving
+        Checkfouls(); // check if there are any fouls from the last round and changes the turn if there are
         Controlthecuestick();// power and the movement of the stick
         }
 
-
         else { //if ball is moving
-        stick.getStick().setTransform(10, 30, 0); // put the stick away
-        turnfinished=true; // when u hit the ball the turn is finished
-
-
-        if(checkfirstballtouched==false)
-        {
-
-            if(Player.playeroneturn)
-            {
-                if(foulnumber==1&&player1.getBalls_in_pocket()!=7)
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player1 touched the black");
-                }
-                else if (foulnumber==2&& !player1.isSolidBall())
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player1 touched the solid");
-
-                }
-                else if (foulnumber==3&& !player1.isStripeBall())
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player1 touched the stripe");
-
-                }
-
-
-
-            }
-            else
-
-            {
-                if(foulnumber==1&&player2.getBalls_in_pocket()!=7)
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player2 touched the black");
-
-                }
-                else if (foulnumber==2&& !player2.isSolidBall())
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player2 touched the solid");
-
-                }
-                else if (foulnumber==3&& !player2.isStripeBall())
-                {
-                    checkchangetheplayerturn=true;
-                    System.out.println("the player2 touched the stripe");
-
-                }
-
-            }
-
-
-            if(foulnumber!=0)
-            checkfirstballtouched=true;
+            stick.getStick().setTransform(10, 30, 0); // puts the stick away
+            turnfinished = true; // when u hit the ball the turn is finished
+            Detectifanyfoulsishappening(); //detects the fouls
         }
 
-
-        }
-
-
-
-
+        // camera and draw stuff
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         world.step(1f/60f, 5, 8); // to make the world feel the time
        spaceGame.batch.setProjectionMatrix(camera.combined);
        spaceGame. batch.begin();
        table.draw(spaceGame.batch);
-
+        //
 
 
 
@@ -287,7 +180,7 @@ public class GameScreen implements Screen {
 
 
         //System.out.println(player1.isSolidBall() +" "+ player1.isStripeBall());
-        Checkifanyballtouchestheholes();
+        Checkifanyballtouchestheholes(); //detects if and ball touched the hole
 
 
 
@@ -307,15 +200,10 @@ public class GameScreen implements Screen {
        spaceGame.batch.end();
         //debugRenderer.render(world,camera.combined);  // to render the bodies
 
-
-
-
-
-
     }
 
 
-    public static float[] rowXs(int rowNumber) {
+    public static float[] rowXs(int rowNumber) { // a function to make the triangle balls shape
         float R = 0.75f; // radius of the ball
         switch (rowNumber) {
             case 0: return new float[] {0};
@@ -327,6 +215,59 @@ public class GameScreen implements Screen {
             default: throw new IllegalArgumentException("no more than 5 rows");
         }
     }
+
+    public void Checkfouls()
+    {
+        if(turnfinished)
+        {
+            System.out.println(foulnumber);
+            System.out.println("player 1 : "+player1.isSolidBall()+" " + player1.isStripeBall());
+            System.out.println("player 2 : "+player2.isSolidBall()+" " + player2.isStripeBall());
+
+            if(foulnumber==0) {
+                checkchangetheplayerturn = true;
+                System.out.println("the cueball didnt touch anyball");
+            }
+            else if (Player.playeroneturn&&!player1.isCheckdropedaball())
+            {
+                checkchangetheplayerturn=false;
+                Changeplayerturn();
+                System.out.println("noballs1");
+
+            }
+            else if (!Player.playeroneturn&&!player2.isCheckdropedaball())
+            {
+                checkchangetheplayerturn=false;
+                Changeplayerturn();
+                System.out.println("noballs2");
+            }
+
+
+            if(checkchangetheplayerturn)
+            {
+
+                if(!checkfirstround){
+
+                    Changeplayerturn();
+                    checkchangetheplayerturn=false;
+                    System.out.println("turn changed");
+
+                }
+                else
+                    checkfirstround=false;
+
+            }
+
+            turnfinished=false;// the turn started
+        }
+
+        checkfirstballtouched=false;
+
+    }
+
+
+
+
 
     public boolean Checkallballsmovement()
     {
@@ -346,6 +287,19 @@ public class GameScreen implements Screen {
 
     public void Movethecueballfreely()
     {
+        if(!Checkallballsmovement()) {
+            cueball.getBall().setTransform(10, 30,0);
+        return;
+        }
+        if(checkchangetheplayerturn)
+        {
+            Changeplayerturn();
+            checkchangetheplayerturn=false;
+            foulnumber=5;
+            player1.setCheckdropedaball(true);
+            player2.setCheckdropedaball(true);
+
+        }
         vv = new Vector3((Gdx.input.getX()), Gdx.input.getY(), 0);//get mouse position
         GameScreen.camera.unproject(vv);//translate this position to our world coordinate
         if(vv.x>0)
@@ -368,6 +322,72 @@ public class GameScreen implements Screen {
         }
         stopcuewhilehitting=true;
     }
+
+
+
+
+    public void Detectifanyfoulsishappening()
+        {
+            if(checkfirstballtouched==false)
+            {
+
+                if(Player.playeroneturn)
+                {
+                    if(foulnumber==1&&player1.getBalls_in_pocket()!=7)
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player1 touched the black");
+                    }
+                    else if (foulnumber==2&& !player1.isSolidBall())
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player1 touched the solid");
+
+                    }
+                    else if (foulnumber==3&& !player1.isStripeBall())
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player1 touched the stripe");
+
+                    }
+
+
+
+                }
+                else
+
+                {
+                    if(foulnumber==1&&player2.getBalls_in_pocket()!=7)
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player2 touched the black");
+
+                    }
+                    else if (foulnumber==2&& !player2.isSolidBall())
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player2 touched the solid");
+
+                    }
+                    else if (foulnumber==3&& !player2.isStripeBall())
+                    {
+                        checkchangetheplayerturn=true;
+                        System.out.println("the player2 touched the stripe");
+
+                    }
+
+                }
+
+
+                if(foulnumber!=0)
+                    checkfirstballtouched=true;
+            }
+
+
+
+
+    }
+
 
 
 
@@ -431,6 +451,8 @@ public class GameScreen implements Screen {
     }
 
 
+
+
     public void Checkifanyballtouchestheholes()
     {
 
@@ -443,12 +465,12 @@ public class GameScreen implements Screen {
 
                 if(body.equals(cueball.getBall()))
                 {
-                    body.setTransform(0,0,0);
+                    //body.setTransform(0,0,0);
                     cueball.getBall().setLinearVelocity(0,0);
                     cueball.getBall().setAngularVelocity(0);
                     cueball.getFixturedef().isSensor=true;
                     cueball.getBall().setActive(false);
-                    body.setTransform(0,0,0);
+                    //body.setTransform(0,0,0);
 
                     checkcueball=true;
 
@@ -576,6 +598,7 @@ public class GameScreen implements Screen {
 
         }
     }
+
 
 
     public void Changeplayerturn()
