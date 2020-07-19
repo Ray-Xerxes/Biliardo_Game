@@ -9,14 +9,7 @@ public class CueBall extends Ball {
         super(Pos,ballSprite);
         this.getFixturedef().filter.categoryBits=Constants.BIT_CUE_BALL;//what it belongs to
         this.getFixturedef().filter.groupIndex=1;//to make sure it collides with other balls
+        this.getBall().createFixture(this.getFixturedef()).setUserData("cueball");
     }
-    public boolean CheckBallMovement(){
-        if (this.getBall().getLinearVelocity().len()<0.2) {
-            this.getBall().setLinearVelocity(0,0);
-            return true;
-        }
-        else return false;
 
-
-    }
 }

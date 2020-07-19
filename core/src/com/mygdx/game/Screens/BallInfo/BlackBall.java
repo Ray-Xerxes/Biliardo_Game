@@ -8,6 +8,8 @@ public class BlackBall extends Ball{
         super(Pos,ballSprite);
         this.getFixturedef().filter.categoryBits=Constants.BIT_OTHER_BALLS;//what it belongs to *collision Detection*
         this.getFixturedef().filter.groupIndex=1;//to make sure it collides with other balls
+        this.getBall().createFixture(this.getFixturedef()).setUserData("Blackball");
+
     }
 
 }

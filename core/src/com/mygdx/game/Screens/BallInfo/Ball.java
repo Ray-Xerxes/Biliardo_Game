@@ -20,11 +20,11 @@ public class Ball {
     private FixtureDef fixturedef;
     private CircleShape shape;
     private Sprite ballSprite;
-
+    private boolean isout;
 
     Ball(Vector2 Pos, Sprite ballSprite) // takes the x , y
     {
-
+        isout=false;
         this.ballSprite = ballSprite;
         this.Position = Pos;
         balldef = new BodyDef();
@@ -39,23 +39,33 @@ public class Ball {
         fixturedef = new FixtureDef();
         // the ball physics
         fixturedef.density = 2.5f;
-        fixturedef.friction = 1f;
+        fixturedef.friction = 0.2f;
         fixturedef.shape = shape;
-        fixturedef.restitution = 0.7f;
+        fixturedef.restitution = 0.8f;
 
         Ball = GameScreen.world.createBody(balldef);
+        Ball.setUserData(ballSprite);
 
 
         // both used like the friction
-        Ball.setLinearDamping(0.8f);
-        Ball.setAngularDamping(0.8f);
+        Ball.setLinearDamping(0.7f);
+        Ball.setAngularDamping(0.7f);
 
         Ball.createFixture(fixturedef);
 
         //create sprite
         ballSprite.setSize(RADIUS * 2, RADIUS * 2);
         ballSprite.setOrigin(ballSprite.getWidth() / 2, ballSprite.getHeight() / 2);
-        Ball.setUserData(ballSprite);
+
+
+    }
+    public boolean Checkifballstopped(){
+        if (this.getBall().getLinearVelocity().len()<0.2) {
+            this.getBall().setLinearVelocity(0,0);
+            return true;
+        }
+        else return false;
+
 
     }
     public Body getBall() {
@@ -111,6 +121,11 @@ public class Ball {
         this.ballSprite = ballSprite;
     }
 
+    public boolean isIsout() {
+        return isout;
+    }
 
-
+    public void setIsout(boolean isout) {
+        this.isout = isout;
+    }
 }
