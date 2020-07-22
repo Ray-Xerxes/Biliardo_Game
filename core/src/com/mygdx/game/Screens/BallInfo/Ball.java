@@ -62,6 +62,8 @@ public class Ball {
     public boolean Checkifballstopped(){
         if (this.getBall().getLinearVelocity().len()<0.2) {
             this.getBall().setLinearVelocity(0,0);
+            this.getBall().setAngularVelocity(0);
+
             return true;
         }
         else return false;

@@ -15,20 +15,20 @@ public class MyContactListener implements ContactListener {
         if(fa.getUserData()==null||fb.getUserData()==null)return;
 
         if(fa.getUserData().equals("cueball") && fb.getUserData().equals("Blackball")) {
-            GameScreen.foulnumber = 1;
+            GameScreen.foulsystem.foulnumber = 1;
             //System.out.println("blacktouched");
 
         }
 
 
         else if(fa.getUserData().equals("cueball") && fb.getUserData().toString().matches("0|1|2|3|4|5|6")) {
-            GameScreen.foulnumber = 2;
+            GameScreen.foulsystem.foulnumber = 2;
             //System.out.println("solidtouched");
 
         }
 
         else if(fa.getUserData().equals("cueball") && fb.getUserData().toString().matches("7|8|9|10|11|12|13")) {
-            GameScreen.foulnumber = 3;
+            GameScreen.foulsystem.foulnumber = 3;
         //System.out.println("stripetouched");
         }
 
